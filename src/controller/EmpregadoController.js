@@ -1,3 +1,4 @@
+import logger from "../configs/logger.js";
 import service from "../service/EmpregadoService.js";
 
 class EmpregadosController {
@@ -12,6 +13,7 @@ class EmpregadosController {
             const empregado = await service.findById(req.params.id);
             return res.json(empregado);
         } catch (error) {
+            logger.error(error);
             res.status(400).json({ message: error.message });
         }
     }
@@ -22,6 +24,7 @@ class EmpregadosController {
 
             return res.json(empregado);
         } catch (error) {
+            logger.error(error);
             res.status(400).json({ message: error.message });
         }
     }
@@ -33,6 +36,7 @@ class EmpregadosController {
 
             return res.json(empregado);
         } catch (error) {
+            logger.error(error);
             res.status(400).json({ message: error.message });
         }
     }
@@ -44,6 +48,7 @@ class EmpregadosController {
 
             return res.status(204).json(empregado);
         } catch (error) {
+            logger.error(error);
             res.status(400).json({ message: error.message });
         }
     }
