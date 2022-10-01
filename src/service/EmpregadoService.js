@@ -22,12 +22,13 @@ class EmpregadoService {
         return EmpregadoResponse.of(empregado[0]);
     }
 
-    async save(empregado) {
-        empregado.id = await this.#getNextId();
+    async save(request) {
+        request.id = await this.#getNextId();
 
-        this.#validarEmpregado(empregado);
+        this.#validarEmpregado(request);
 
-        return await this.#repository.create(empregado);
+        const empregado = await this.#repository.create(request);
+        return EmpregadoResponse.of(empregado);
     }
 
     async update(id, empregado) {
