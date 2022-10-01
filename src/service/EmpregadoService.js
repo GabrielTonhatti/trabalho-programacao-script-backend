@@ -17,9 +17,7 @@ class EmpregadoService {
     async findById(id) {
         const empregado = await this.#repository.find({ id });
 
-        if (empregado.length === 0) {
-            throw new Error(`Empregado de id ${id} não encontrado`);
-        }
+        this.#validarEmpregadoPorId(empregado, id);
 
         return EmpregadoResponse.of(empregado[0]);
     }
@@ -35,18 +33,33 @@ class EmpregadoService {
     async update(id, empregado) {
         const empregadoEncontrado = await this.#repository.find({ id });
 
-        if (empregadoEncontrado.length === 0) {
-            throw new Error(`Empregado de id ${id} não encontrado`);
-        }
+        this.#validarEmpregadoPorId(empregadoEncontrado, id);
 
         this.#validarEmpregado(empregado);
 
-        return await this.#repository.updateOne({ id }, empregado);
+        await this.#repository.updateOne({ id }, empregado);
+        const empregadoAtualizado = await this.#repository.find({ id });
+
+        return EmpregadoResponse.of(empregadoAtualizado[0]);
+    }
+
+    async delete(id) {
+        const empregado = await this.#repository.find({ id });
+
+        this.#validarEmpregadoPorId(empregado, id);
+
+        await this.#repository.deleteOne({ id });
     }
 
     async #getNextId() {
         const last = await this.#repository.find({}).sort({ id: -1 }).limit(1);
         return last.length > 0 ? last[0].id + 1 : 1;
+    }
+
+    #validarEmpregadoPorId(empregado, id) {
+        if (empregado.length === 0) {
+            throw new Error(`Empregado de id ${id} não encontrado`);
+        }
     }
 
     #validarEmpregado(empregado) {

@@ -36,6 +36,17 @@ class EmpregadosController {
             res.status(400).json({ message: error.message });
         }
     }
+
+    async delete(req, res) {
+        try {
+            const { id } = req.params;
+            const empregado = await service.delete(id);
+
+            return res.status(204).json(empregado);
+        } catch (error) {
+            res.status(400).json({ message: error.message });
+        }
+    }
 }
 
 export default new EmpregadosController();
