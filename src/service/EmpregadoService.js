@@ -16,14 +16,40 @@ class EmpregadoService {
 
     async findById(id) {
         const empregado = await this.#repository.find({ id });
-        return empregado.length > 0
-            ? EmpregadoResponse.of(empregado[0])
-            : Object;
+
+        if (empregado.length === 0) {
+            throw new Error(`Empregado de id ${id} não encontrado`);
+        }
+
+        return EmpregadoResponse.of(empregado[0]);
     }
 
     async save(empregado) {
         empregado.id = await this.#getNextId();
 
+        this.#validarEmpregado(empregado);
+
+        return await this.#repository.create(empregado);
+    }
+
+    async update(id, empregado) {
+        const empregadoEncontrado = await this.#repository.find({ id });
+
+        if (empregadoEncontrado.length === 0) {
+            throw new Error(`Empregado de id ${id} não encontrado`);
+        }
+
+        this.#validarEmpregado(empregado);
+
+        return await this.#repository.updateOne({ id }, empregado);
+    }
+
+    async #getNextId() {
+        const last = await this.#repository.find({}).sort({ id: -1 }).limit(1);
+        return last.length > 0 ? last[0].id + 1 : 1;
+    }
+
+    #validarEmpregado(empregado) {
         if (empregado.funcao === undefined) {
             throw new Error("A função do vendedor é obrigatória");
         } else if (empregado.salario === undefined) {
@@ -31,13 +57,6 @@ class EmpregadoService {
         } else if (empregado.nome === undefined) {
             throw new Error("O nome do vendedor é obrigatório");
         }
-
-        return await this.#repository.create(empregado);
-    }
-
-    async #getNextId() {
-        const last = await this.#repository.find({}).sort({ id: -1 }).limit(1);
-        return last.length > 0 ? last[0].id + 1 : 1;
     }
 }
 

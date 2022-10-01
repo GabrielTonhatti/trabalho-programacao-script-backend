@@ -1,4 +1,3 @@
-// import logger from "../configs/logger.js";
 import service from "../service/EmpregadoService.js";
 
 class EmpregadosController {
@@ -9,12 +8,28 @@ class EmpregadosController {
     }
 
     async findById(req, res) {
-        return res.json(await service.findById(req.params.id));
+        try {
+            const empregado = await service.findById(req.params.id);
+            return res.json(empregado);
+        } catch (error) {
+            res.status(400).json({ message: error.message });
+        }
     }
 
     async save(req, res) {
         try {
             const empregado = await service.save(req.body);
+
+            return res.json(empregado);
+        } catch (error) {
+            res.status(400).json({ message: error.message });
+        }
+    }
+
+    async update(req, res) {
+        try {
+            const { id } = req.params;
+            const empregado = await service.update(id, req.body);
 
             return res.json(empregado);
         } catch (error) {
