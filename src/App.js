@@ -18,6 +18,14 @@ class App {
         this.#_app.use(cors());
         this.#_app.use(express.json());
         this.#_app.use(express.urlencoded({ extended: true }));
+        this.#_app.use(this.#allowCrossDomain);
+    }
+
+    #allowCrossDomain(req, res, next) {
+        res.header("Access-Control-Allow-Origin", "*");
+        res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
+
+        next();
     }
 
     #database() {
